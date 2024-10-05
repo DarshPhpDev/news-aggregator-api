@@ -209,7 +209,8 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'ExampleClass' => App\Example\ExampleClass::class,
+        // To use class name directly as alias without namespace
+        'ApiResponse'    => \App\Helpers\ApiResponse::class
     ])->toArray(),
 
 ];

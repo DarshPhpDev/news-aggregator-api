@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use ApiResponse;
 
 class Handler extends ExceptionHandler
 {
@@ -46,5 +47,27 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+    
+    // render function along with ApiReponse to handle api errors in json format
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+        
+            // If not authenticated exception thrown
+            return ApiResponse::sendResponse([], 401, null, true);
+        
+        } else if ($exception instanceof \Illuminate\Validation\ValidationException) {
+
+            // If validataion exception thrown
+            return ApiResponse::sendResponse([], 200, 'Validation Errors', true, $exception->validator->messages()->get('*'));
+        
+        }else{
+        
+            // Any other 500 server error
+            return ApiResponse::sendResponse([], 500, $exception->getMessage(), true);
+        
+        }
+        return parent::render($request, $exception);
     }
 }

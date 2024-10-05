@@ -1,13 +1,22 @@
 services:
   app:
     image: php:8.1-fpm
+    build:
+      dockerfile: ./docker/php/Dockerfile
     container_name: news-aggregator-api
-    restart: unless-stopped
-    working_dir: /var/www
+    environment:
+      - DB_HOST=mysql
+      - DB_DATABASE=news_aggregator
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_PORT=3306
     volumes:
       - ./:/var/www
+    depends_on:
+      - mysql
+    restart: unless-stopped
     networks:
-      - laravel
+      - app-network
 
   webserver:
     image: nginx
@@ -19,22 +28,25 @@ services:
       - ./:/var/www
       - ./docker/nginx:/etc/nginx/conf.d
     networks:
-      - laravel
+      - app-network
 
-  db:
+  mysql:
     image: mysql:8.0
-    container_name: mysql-db
+    container_name: mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: your_password
-      MYSQL_DATABASE: news_aggregator
+      - MYSQL_ROOT_USER=root
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=news_aggregator
     volumes:
       - dbdata:/var/lib/mysql
+    ports:
+      - "3307:3306"
     networks:
-      - laravel
+      - app-network
 
 networks:
-  laravel:
+  app-network:
     driver: bridge
 
 volumes:
