@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('web_url')->nullable();
             $table->dateTime('published_at')->nullable()->index();
             $table->string('news_source')->nullable();  // newsapi, theguardianapi, newyorktimesapi, ...
-            $table->foreignId('source_id')->constrained();
+            $table->foreignId('source_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

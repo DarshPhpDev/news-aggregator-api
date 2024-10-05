@@ -12,7 +12,7 @@ class GuardianAPIFetcher extends ParentNewsFetcher implements ArticleFetcherInte
 
     public function __construct()
     {
-        $this->configs = config('news-sources.newsapi');
+        $this->configs = config('news-sources.theguardianapi');
     }
 
     public function setQueryParams()
@@ -33,9 +33,9 @@ class GuardianAPIFetcher extends ParentNewsFetcher implements ArticleFetcherInte
     {
         $response = Http::get($this->configs['api_url'], $this->setQueryParams());
 
-        if ($response->ok() && strtolower($response->json('status')) === 'ok') {
+        if ($response->ok() && strtolower($response->json('response')['status']) === 'ok') {
 
-            foreach ($response->json('results') as $article) {
+            foreach ($response->json('response')['results'] as $article) {
                 parent::storeArticle(
                     $article['webTitle'],
                     $article['webTitle'],

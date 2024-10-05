@@ -19,6 +19,7 @@ class Article extends Model
         'web_url',
         'published_at',
         'source_id',
+        'news_source'
     ];
 
     public function source()
