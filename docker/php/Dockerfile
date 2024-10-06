@@ -21,6 +21,9 @@ COPY . /var/www/
 # Set the working directory to the Laravel project root
 WORKDIR /var/www
 
+# Copy the .env.example to .env
+RUN cp .env.example .env
+
 # Install Composer and dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer install --no-dev

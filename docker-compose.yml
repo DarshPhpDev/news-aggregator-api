@@ -1,6 +1,5 @@
 services:
   app:
-    image: php:8.1-fpm
     build:
       dockerfile: ./docker/php/Dockerfile
     container_name: news-aggregator-api
