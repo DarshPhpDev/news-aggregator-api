@@ -3,16 +3,27 @@
 namespace App\Services;
 
 use App\Models\Article;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Exception;
+use App\Models\Source;
+use App\Services\UserPreferenceService;
 
 class ArticleService
 {
+    protected $model;
+    protected $userPreferenceService;
+
+    /**
+     * ArticleService constructor.
+     * @param Article $model
+     */
+    public function __construct(Article $model, UserPreferenceService $userPreferenceService)
+    {
+        $this->model = $model;
+    }
+
     // Fetch articles with optional filters and pagination
     public function getArticles(array $filters = [], int $perPage = 10)
     {
-        $query = Article::query();
+        $query = $this->model->query();
 
         $this->cleanFilters($filters);
 
@@ -40,13 +51,20 @@ class ArticleService
             });
         }
 
+        /*
+            If authenticated user, then filter the articles by his prefered preferences
+        */
+        if($user = Auth::check()){
+            $query = $this->FilterArticlesByUserPreferredPreferences($user, $query);
+        }
+
         return $query->paginate($perPage);
     }
 
     // Fetch a single article by ID
     public function getArticleById(int $id)
     {
-        return Article::findOrFail($id);
+        return $this->model->findOrFail($id);
     }
 
     public function cleanFilters(&$filters)
@@ -62,5 +80,28 @@ class ArticleService
                 $filters[$field] = explode(',', trim($filters[$field]));
             }
         }
+    }
+
+    public function FilterArticlesByUserPreferredPreferences($user, $query)
+    {
+        $preferences = $this->userPreferenceService->getPreferences($user);
+
+        $query->when(!empty($preferences['sources']), function($q) use ($preferences) {
+            $sourceIds = Source::whereIn('name', $preferences['sources'])->pluck('id');
+            $q->whereIn('source_id', $sourceIds);
+        });
+
+        $query->when(!empty($preferences['categories']), function($q) use ($preferences) {
+            $categoryIds = Category::whereIn('name', $preferences['categories'])->pluck('id');
+            $q->whereIn('category_id', $categoryIds);
+        });
+        
+        $query->when(!empty($preferences['authors']), function($q) use ($preferences) {
+            $q->whereHas('authors', function ($q) use ($preferences) {
+                $q->whereIn('name', $preferences['authors']);
+            });
+        });
+
+        return $query;
     }
 }

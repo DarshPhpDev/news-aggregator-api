@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('sources', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
+            $table->string('name')->index();
             $table->timestamps();
         });
     }

@@ -16,6 +16,11 @@ class UserPreference extends Model
         'value'
     ];
 
+    // Cast the 'value' column to array to work with JSON automatically
+    protected $casts = [
+        'value' => 'array',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
