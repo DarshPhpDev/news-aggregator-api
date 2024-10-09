@@ -39,11 +39,6 @@ class NYTimesAPIFetcher extends ParentNewsFetcher implements ArticleFetcherInter
                     $article['abstract'],
                     $article['lead_paragraph'],
                     $article['section_name'] ?? 'General',
-                    isset($article['byline']) && isset($article['byline']['person'][0]) 
-                                ? 
-                            $article['byline']['person'][0]['firstname'] . ' ' . $article['byline']['person'][0]['lastname'] 
-                                : 
-                            null,
                     isset($article['byline']) ? $this->extractAuthors($article['byline']) : [],
                     isset($article['multimedia']) && count($article['multimedia']) > 0 ? $this->extractImageUrlFromMultimedia($article['multimedia']) : null,
                     $article['web_url'],

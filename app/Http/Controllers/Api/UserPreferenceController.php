@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserPreferenceRequest;
 use App\Services\UserPreferenceService;
 use Illuminate\Http\Request;
-use ApiResponse;
 
 class UserPreferenceController extends Controller
 {
@@ -21,28 +22,24 @@ class UserPreferenceController extends Controller
         return ApiResponse::sendResponse($this->userPreferenceService->getAvailablePreferences(), 200);
     }
 
-    public function setPreferences(Request $request)
+    public function setPreferences(UserPreferenceRequest $request)
     {
         $user = \Auth::user();
-        // Validate the request input
-        $validated = $request->validate([
-            'sources' => 'array',
-            'categories' => 'array',
-            'authors' => 'array',
-        ]);
+
+        $validated = $request->validated();
 
         // Save preferences for 'sources'
-        if (!empty($validated['sources'])) {
+        if (isset($validated['sources']) && !empty($validated['sources'])) {
             $this->userPreferenceService->setPreferences($user, 'sources', $validated['sources']);
         }
 
         // Save preferences for 'categories'
-        if (!empty($validated['categories'])) {
+        if (isset($validated['categories']) && !empty($validated['categories'])) {
             $this->userPreferenceService->setPreferences($user, 'categories', $validated['categories']);
         }
 
         // Save preferences for 'authors'
-        if (!empty($validated['authors'])) {
+        if (isset($validated['authors']) && !empty($validated['authors'])) {
             $this->userPreferenceService->setPreferences($user, 'authors', $validated['authors']);
         }
         return ApiResponse::sendResponse([], 200, 'Preferences updated successfully.');
