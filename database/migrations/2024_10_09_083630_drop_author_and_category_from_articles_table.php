@@ -14,7 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('articles', function (Blueprint $table) {
+            $table->dropIndex(['category']);
             $table->dropColumn('category');
+            $table->dropIndex(['author']);
             $table->dropColumn('author');
         });
     }

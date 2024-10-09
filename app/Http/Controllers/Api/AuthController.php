@@ -97,13 +97,13 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        if($user = $this->authService->login($request->only('email', 'password'))){
+        if($user = $this->authService->login($request)){
             $token = $this->authService->createUserToken($user);
             return ApiResponse::sendResponse([
                 'access_token' => $token,
             ], 200);
         }
-        return ApiResponse::sendResponse([], 401, 'Invalid login credentials');
+        return ApiResponse::sendResponse([], 401, 'Invalid login credentials', true);
     }
 
 
