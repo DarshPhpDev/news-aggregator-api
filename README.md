@@ -45,11 +45,17 @@ http://localhost:8000
 ```
 The app is now up and running.
 
+#### 6. API Documentation
+Since the app is up and running, you can browse the api documentation and execute api calls through this url:
+```bash
+http://localhost:8000/api/documentation
+```
 ## Technologies Used
 
 - **PHP 8.x**
 -   **Laravel 9**
 -   **Laravel Sanctum** (for API authentication)
+-   **Swagger** (for API documentation)
 -   **MySQL**
 -   **Docker** (with Docker Compose)
 
