@@ -23,13 +23,15 @@ class ArticleService
         }
 
         if (!empty($filters['category'])) {
-            $query->whereHas('source', function ($q) use ($filters){
-                $q->whereIn('sources.id', $filters['source']);
+            $query->whereHas('category', function ($q) use ($filters){
+                $q->whereIn('categories.id', $filters['category']);
             });
         }
 
         if (!empty($filters['author'])) {
-            $query->whereIn('author', $filters['author']);
+            $query->whereHas('authors', function ($q) use ($filters){
+                $q->whereIn('authors.id', $filters['author']);
+            });
         }
 
         if (!empty($filters['source'])) {

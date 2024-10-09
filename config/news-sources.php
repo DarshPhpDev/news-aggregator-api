@@ -7,7 +7,7 @@ return [
         'api_url'               => 'https://newsapi.org/v2/top-headlines',
         'api_key'               => env('NEWS_API_KEY', 'e6c1e09b72374a06a34697932bae5493'),
         'api_parameter_name'    => 'apiKey',
-        'other_paremeters'      => ['language' => 'us'],
+        'other_paremeters'      => ['language' => 'en'],
     ],
 
     // the guardian api configurations

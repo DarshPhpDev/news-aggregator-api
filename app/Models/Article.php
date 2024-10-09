@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Author;
+use App\Models\Category;
 use App\Models\Source;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,8 +15,6 @@ class Article extends Model
     protected $fillable = [
         'title',
         'body',
-        'category',
-        'author',
         'thumb',
         'web_url',
         'published_at',
@@ -25,5 +25,15 @@ class Article extends Model
     public function source()
     {
         return $this->belongsTo(Source::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function authors()
+    {
+        return $this->belongsToMany(Author::class, 'article_author');
     }
 }
