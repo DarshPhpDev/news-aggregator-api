@@ -50,6 +50,7 @@ class UserPreferenceController extends Controller
 
     public function getPreferences()
     {
-        return ApiResponse::sendResponse($this->userPreferenceService->getPreferences(), 200);
+        $user = \Auth::user();
+        return ApiResponse::sendResponse($this->userPreferenceService->getPreferences($user), 200);
     }
 }

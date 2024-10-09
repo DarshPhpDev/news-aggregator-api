@@ -48,7 +48,7 @@ class UserPreferenceService
         ];
     }
 
-    public function getPreferences($user = auth()->user())
+    public function getPreferences($user)
     {
         return $this->model->where('user_id', $user->id)
                                       ->pluck('value', 'key')

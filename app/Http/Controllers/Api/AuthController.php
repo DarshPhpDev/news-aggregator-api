@@ -2,59 +2,58 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
-use Auth;
 use ApiResponse;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Models\User;
+use App\Services\AuthService;
+use Auth;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    protected $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     /**
      * Register new User
      *
-     * @param Request $request
+     * @param RegisterRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request) {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-        ]);
-
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
+    public function register(RegisterRequest $request) {
+        $validatedData = $request->validated();
         
-        return ApiResponse::sendResponse([
-            'access_token' => $token,
-        ], 200);
+        if($user = $this->authService->createUser($validatedData)){
+            $token = $this->authService->createUserToken($user);
+            return ApiResponse::sendResponse([
+                'access_token' => $token,
+            ], 200);
+        }
+
+        return ApiResponse::sendResponse([], 500, 'Failed to register user.');
     }
 
     /**
      * Login User
      *
-     * @param Request $request
+     * @param LoginRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        // Using Auth::guard('web') since our current api guard using sanctum which doesn't have attempt method.
-        if (!Auth::guard('web')->attempt($request->only('email', 'password'))) {
-            return ApiResponse::sendResponse([], 401, 'Invalid login credentials');
+        if($user = $this->authService->login($request->only('email', 'password'))){
+            $token = $this->authService->createUserToken($user);
+            return ApiResponse::sendResponse([
+                'access_token' => $token,
+            ], 200);
         }
-
-        $user = User::where('email', $request['email'])->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return ApiResponse::sendResponse([
-            'access_token' => $token,
-        ], 200);
+        return ApiResponse::sendResponse([], 401, 'Invalid login credentials');
     }
 
     /**
@@ -64,11 +63,10 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        if($user = Auth::user()){
-            $user->tokens()->delete();
+        if($this->authService->loggedOut()){
             return ApiResponse::sendResponse([], 200, 'Logged out!');
-        }else{
-            return ApiResponse::sendResponse([], 200, 'Not authenticated or already logged out!');
         }
+
+        return ApiResponse::sendResponse([], 200, 'Not authenticated or already logged out!');
     }
 }

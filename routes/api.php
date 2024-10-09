@@ -14,6 +14,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{id}', [ArticleController::class, 'show']);
+
 Route::get('/available-preferences', [UserPreferenceController::class, 'getAvailablePreferences']);
 
 
