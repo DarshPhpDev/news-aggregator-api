@@ -44,6 +44,7 @@ class NYTimesAPIFetcher extends ParentNewsFetcher implements ArticleFetcherInter
                             $article['byline']['person'][0]['firstname'] . ' ' . $article['byline']['person'][0]['lastname'] 
                                 : 
                             null,
+                    isset($article['byline']) ? $this->extractAuthors($article['byline']) : [],
                     isset($article['multimedia']) && count($article['multimedia']) > 0 ? $this->extractImageUrlFromMultimedia($article['multimedia']) : null,
                     $article['web_url'],
                     $article['pub_date'] ?? now(),
@@ -69,5 +70,24 @@ class NYTimesAPIFetcher extends ParentNewsFetcher implements ArticleFetcherInter
     public function extractImageUrlFromMultimedia($multimediaArray)
     {
         return isset($multimediaArray[0]['url']) ? 'https://www.nytimes.com/' . $multimediaArray[0]['url'] : '';
+    }
+
+    /**
+     * Custom function to extract the article author'/s.
+     *
+     * @param array
+     * @return array
+     */
+    public function extractAuthors($authorsArr)
+    {
+        if(isset($authorsArr['person']) && is_array($authorsArr['person'])){
+            return array_map(function($person) {
+                $firstname = !empty($person['firstname']) ? $person['firstname'] : '';
+                $lastname = !empty($person['lastname']) ? $person['lastname'] : '';
+                
+                return trim($firstname . ' ' . $lastname);
+            }, $authorsArr['person']);
+        }
+        return [];
     }
 }

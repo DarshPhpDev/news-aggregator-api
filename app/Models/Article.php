@@ -16,6 +16,7 @@ class Article extends Model
         'title',
         'body',
         'thumb',
+        'category_id',
         'web_url',
         'published_at',
         'source_id',

@@ -3,6 +3,7 @@
 namespace App\Services\NewsFetchers;
 
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\Source;
 
 class ParentNewsFetcher {
@@ -11,23 +12,43 @@ class ParentNewsFetcher {
     const THE_GUARDIAN_API_SOURCE_NAME = 'theguardianapi';
     const NEW_YORK_TIMES_API_SOURCE_NAME = 'newyorktimesapi';
 
-    public static function storeArticle($title, $body, $category, $author, $thumb, $url, $publishedAt, $source = null, $news_source = null){
-        Article::create([
+    public static function storeArticle($title, $body, $category, $authors, $thumb, $url, $publishedAt, $source = null, $news_source = null){
+        $createdArticle = Article::create([
             'title'         => $title,
             'body'          => $body,
-            'category'      => $category,
-            'author'        => $author,
+            'category_id'   => $category ? self::findOrCreateCategory($category) : null,
             'thumb'         => $thumb ?? 'https://placehold.co/400x200?text=No+Image',
             'web_url'       => $url,
             'published_at'  => date('Y-m-d H:i:s', strtotime($publishedAt)),
             'source_id'     => $source ? self::findOrCreateSource($source) : null,
             'news_source'   => $news_source
         ]);
+
+        if(!empty($authors)){
+            self::findOrCreateAuthors($createdArticle, $authors);
+        }
     }
 
     public static function findOrCreateSource($source)
     {
         return Source::firstOrCreate(['name' =>  $source])->id;
+    }
+
+    public static function findOrCreateCategory($category)
+    {
+        return Category::firstOrCreate(['name' =>  $category])->id;
+    }
+
+    public static function findOrCreateAuthors($createdArticle, $authors)
+    {
+        $authorIds = [];
+        if(!is_array($authors) && !empty($authors)){
+            $authors = explode(',', $authors);
+        }
+        foreach($authors as $author){
+            $authorIds [] = Author::firstOrCreate(['name' =>  $author])->id;
+        }
+        $createdArticle->authors()->sync($authors);
     }
 
     public static function successResponse()
