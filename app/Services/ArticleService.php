@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\Source;
 use App\Services\UserPreferenceService;
 
@@ -18,6 +19,7 @@ class ArticleService
     public function __construct(Article $model, UserPreferenceService $userPreferenceService)
     {
         $this->model = $model;
+        $this->userPreferenceService = $userPreferenceService;
     }
 
 
@@ -41,26 +43,26 @@ class ArticleService
 
         if (!empty($filters['category'])) {
             $query->whereHas('category', function ($q) use ($filters){
-                $q->whereIn('categories.id', $filters['category']);
+                $q->whereIn('categories.name', $filters['category']);
             });
         }
 
         if (!empty($filters['author'])) {
             $query->whereHas('authors', function ($q) use ($filters){
-                $q->whereIn('authors.id', $filters['author']);
+                $q->whereIn('authors.name', $filters['author']);
             });
         }
 
         if (!empty($filters['source'])) {
             $query->whereHas('source', function ($q) use ($filters){
-                $q->whereIn('sources.id', $filters['source']);
+                $q->whereIn('sources.name', $filters['source']);
             });
         }
 
         /*
             If authenticated user, then filter the articles by his prefered preferences
         */
-        if($user = \Auth::check()){
+        if($user = \Auth::user()){
             $query = $this->FilterArticlesByUserPreferredPreferences($user, $query);
         }
 
