@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Article;
 use App\Models\Source;
 use App\Services\Contracts\ArticleFetcherInterface;
+use Illuminate\Support\Facades\Cache;
 
 class FetchArticleService
 {
@@ -21,5 +22,13 @@ class FetchArticleService
         foreach ($this->fetchers as $fetcher) {
             $fetchResult = $fetcher->fetch();
         }
+        $this->clearCachedResources();
+    }
+
+    public function clearCachedResources()
+    {
+        Cache::forget('categories');
+        Cache::forget('authors');
+        Cache::forget('sources');
     }
 }

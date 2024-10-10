@@ -35,15 +35,15 @@ class UserPreferenceService
         $oneHour = 60 * 60;
         return [
             'categories' => Cache::remember('categories', $oneHour, function () {
-                return Category::orderBy('name', 'asc')->get();
+                return Category::orderBy('name', 'asc')->get(['id', 'name']);
             }),
 
             'authors' => Cache::remember('authors', $oneHour, function () {
-                return Author::orderBy('name', 'asc')->get();
+                return Author::orderBy('name', 'asc')->get(['id', 'name']);
             }),
 
             'sources' => Cache::remember('sources', $oneHour, function () {
-                return Source::orderBy('name', 'asc')->get();
+                return Source::orderBy('name', 'asc')->get(['id', 'name']);
             })
         ];
     }
