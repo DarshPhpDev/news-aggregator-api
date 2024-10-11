@@ -7,7 +7,7 @@ This is a **News Aggregator API** built with **Laravel 9**. The app regularly fe
 ## How to Run the Application
 #### 1. Clone the Repository
 ```bash
-git clone git@github.com:DarshPhpDev/news-aggregator.git
+git clone git@github.com:DarshPhpDev/news-aggregator-api.git
 ```
 Navigate to the project directory:
 ```bash
