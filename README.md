@@ -25,8 +25,9 @@ and wait for the docker images to be pulled, built and the containers to be up a
 ```bash
 docker-compose exec app cp .env.example .env
 docker-compose exec app composer install --no-dev
+docker-compose exec app php artisan key:generate
 ```
-These two commands will ensure composer dependencies are installed if they fail to install via Dockerfile for any reason.
+These three commands will ensure composer dependencies are installed and the application key is generated if they fail to install via Dockerfile for any reason.
 
 #### 4. Run Database Migrations and Seeders
 ```bash
