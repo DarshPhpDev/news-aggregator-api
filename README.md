@@ -21,7 +21,7 @@ docker-compose up -d
 ```
 and wait for the docker images to be pulled, built and the containers to be up and running.
 
-#### 3. Install app dependencies
+#### 3. Install App Dependencies & Generate App Key
 ```bash
 docker-compose exec app cp .env.example .env
 docker-compose exec app composer install --no-dev
