@@ -4,23 +4,28 @@ namespace App\Services;
 use App\Models\Article;
 use App\Models\Source;
 use App\Services\Contracts\ArticleFetcherInterface;
+use App\Services\NewsFetchers\GuardianAPIFetcher;
+use App\Services\NewsFetchers\NYTimesAPIFetcher;
+use App\Services\NewsFetchers\NewsAPIFetcher;
 use Illuminate\Support\Facades\Cache;
 
 class FetchArticleService
 {
-    protected $fetchers = [];
-
-    // Inject multiple fetchers through the constructor
-    public function __construct(array $fetchers)
+    /* Define the fetcher sources classes */
+    public function getFetchers()
     {
-        $this->fetchers = $fetchers;
+        return [
+            NewsAPIFetcher::class,
+            GuardianAPIFetcher::class,
+            NYTimesAPIFetcher::class
+        ];
     }
 
     // Fetch articles from all sources
     public function fetchArticles()
     {
-        foreach ($this->fetchers as $fetcher) {
-            $fetchResult = $fetcher->fetch();
+        foreach ($this->getFetchers() as $fetcher) {
+            $fetchResult = (new $fetcher())->fetch();
         }
         $this->clearCachedResources();
     }

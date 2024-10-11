@@ -13,20 +13,11 @@ class FetchArticles extends Command
     // The console command description
     protected $description = 'Fetch articles from external news APIs and store them in the database.';
 
-    protected $fetchArticlesService;
-
-    // Inject the FetchArticleService into the command
-    public function __construct(FetchArticleService $fetchArticlesService)
-    {
-        parent::__construct();
-        $this->fetchArticlesService = $fetchArticlesService;
-    }
-
-    // Execute the console command
-    public function handle()
+    // Inject the FetchArticleService into the handle method
+    public function handle(FetchArticleService $fetchArticlesService)
     {
         // Call the fetchArticles method from the service
-        $this->fetchArticlesService->fetchArticles();
+        $fetchArticlesService->fetchArticles();
 
         // Output success message
         $this->info('Articles fetched and stored successfully.');
